@@ -59,12 +59,37 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        
+        externalNativeBuild {
+            cmake {
+                // CMake arguments for llama.cpp
+                arguments += "-DLLAMA_CURL=OFF"
+                arguments += "-DLLAMA_BUILD_COMMON=ON"
+                arguments += "-DGGML_LLAMAFILE=OFF"
+                arguments += "-DCMAKE_BUILD_TYPE=Release"
+                
+                // Specify target architectures
+                abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            }
+        }
+        
+        ndk {
+            // Specify supported ABIs  
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    externalNativeBuild {
+        cmake {
+            path = file("src/androidMain/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+    
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
