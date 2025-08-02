@@ -1,23 +1,24 @@
 package com.offline.english.ai.eng.assistant
 
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
-import com.offline.english.ai.eng.assistant.screens.ModelManagementScreen
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.offline.english.ai.eng.assistant.screens.WritingAssistantScreen
 
 @Composable
 fun AndroidApp() {
     MaterialTheme {
         var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
-        
+
         when (currentScreen) {
             AppScreen.HOME -> HomeScreen(
-                onNavigateToWritingAssistant = { currentScreen = AppScreen.WRITING_ASSISTANT },
-                onNavigateToModelManagement = { currentScreen = AppScreen.MODEL_MANAGEMENT }
+                onNavigateToWritingAssistant = { currentScreen = AppScreen.WRITING_ASSISTANT }
             )
-            AppScreen.WRITING_ASSISTANT -> com.offline.english.ai.eng.assistant.screens.WritingAssistantScreen(
-                onBackPressed = { currentScreen = AppScreen.HOME }
-            )
-            AppScreen.MODEL_MANAGEMENT -> ModelManagementScreen(
+
+            AppScreen.WRITING_ASSISTANT -> WritingAssistantScreen(
                 onBackPressed = { currentScreen = AppScreen.HOME }
             )
         }

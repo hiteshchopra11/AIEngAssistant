@@ -1,15 +1,21 @@
 package com.offline.english.ai.eng.assistant.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.offline.english.ai.eng.assistant.components.*
-import com.offline.english.ai.eng.assistant.mvi.WritingAssistantViewModel
+import com.offline.english.ai.eng.assistant.components.AIWriterHeader
+import com.offline.english.ai.eng.assistant.components.SuggestionsSection
+import com.offline.english.ai.eng.assistant.components.TextEditor
+import com.offline.english.ai.eng.assistant.components.WritingModeTabs
 import com.offline.english.ai.eng.assistant.mvi.WritingAssistantViewAction
-import com.offline.english.ai.eng.assistant.WritingMode
+import com.offline.english.ai.eng.assistant.mvi.WritingAssistantViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -51,22 +57,20 @@ fun WritingAssistantScreen(
                     modifier = Modifier.weight(1f)
                 )
                 
-                if (state.activeSuggestions.isNotEmpty() || state.isProcessingWord || state.isProcessingSentence) {
-                    SuggestionsSection(
-                        suggestions = state.activeSuggestions,
-                        onApplySuggestion = { suggestion ->
-                            viewModel.handleAction(WritingAssistantViewAction.ApplySuggestion(suggestion))
-                        },
-                        onIgnoreSuggestion = { suggestion ->
-                            viewModel.handleAction(WritingAssistantViewAction.IgnoreSuggestion(suggestion))
-                        },
-                        onApplyAll = {
-                            viewModel.handleAction(WritingAssistantViewAction.ApplyAllSuggestions)
-                        },
-                        isProcessingWord = state.isProcessingWord,
-                        isProcessingSentence = state.isProcessingSentence
-                    )
-                }
+                // DEBUG: Always show suggestions section to test
+                SuggestionsSection(
+                    suggestions = state.activeSuggestions,
+                    onApplySuggestion = { suggestion ->
+                        viewModel.handleAction(WritingAssistantViewAction.ApplySuggestion(suggestion))
+                    },
+                    onIgnoreSuggestion = { suggestion ->
+                        viewModel.handleAction(WritingAssistantViewAction.IgnoreSuggestion(suggestion))
+                    },
+                    onApplyAll = {
+                        viewModel.handleAction(WritingAssistantViewAction.ApplyAllSuggestions)
+                    },
+                    isLoading = state.isLoading
+                )
             }
         }
     }

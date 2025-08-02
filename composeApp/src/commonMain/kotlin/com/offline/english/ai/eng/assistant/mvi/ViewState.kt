@@ -10,10 +10,6 @@ data class WritingAssistantViewState(
     val suggestions: List<WritingSuggestion> = emptyList(),
     val appliedSuggestions: Set<Int> = emptySet(),
     val isLoading: Boolean = false,
-    val isProcessingWord: Boolean = false,
-    val isProcessingSentence: Boolean = false,
-    val lastProcessedWordIndex: Int = -1,
-    val lastProcessedSentenceIndex: Int = -1,
     val error: String? = null
 ) {
     val activeSuggestions: List<WritingSuggestion>

@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -32,6 +31,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            // MediaPipe LLM Inference
+            implementation("com.google.mediapipe:tasks-genai:0.10.14")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -40,8 +41,6 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -60,33 +59,10 @@ android {
         versionCode = 1
         versionName = "1.0"
         
-        externalNativeBuild {
-            cmake {
-                // CMake arguments for llama.cpp
-                arguments += "-DLLAMA_CURL=OFF"
-                arguments += "-DLLAMA_BUILD_COMMON=ON"
-                arguments += "-DGGML_LLAMAFILE=OFF"
-                arguments += "-DCMAKE_BUILD_TYPE=Release"
-                
-                // Specify target architectures
-                abiFilters += listOf("arm64-v8a", "armeabi-v7a")
-            }
-        }
-        
-        ndk {
-            // Specify supported ABIs  
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
-        }
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path = file("src/androidMain/cpp/CMakeLists.txt")
-            version = "3.22.1"
         }
     }
     

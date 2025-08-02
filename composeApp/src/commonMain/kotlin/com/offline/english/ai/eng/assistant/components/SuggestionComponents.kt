@@ -1,10 +1,26 @@
 package com.offline.english.ai.eng.assistant.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,8 +52,7 @@ fun SuggestionsSection(
     onApplySuggestion: (WritingSuggestion) -> Unit,
     onIgnoreSuggestion: (WritingSuggestion) -> Unit,
     onApplyAll: () -> Unit,
-    isProcessingWord: Boolean = false,
-    isProcessingSentence: Boolean = false
+    isLoading: Boolean = false
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -65,7 +80,7 @@ fun SuggestionsSection(
                             color = Color.Black
                         )
                         
-                        if (isProcessingWord || isProcessingSentence) {
+                        if (isLoading) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Box(
                                 modifier = Modifier
@@ -76,11 +91,7 @@ fun SuggestionsSection(
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
                                 Text(
-                                    text = when {
-                                        isProcessingWord -> "Processing word..."
-                                        isProcessingSentence -> "Processing sentence..."
-                                        else -> "Processing..."
-                                    },
+                                    text = "Processing...",
                                     fontSize = 10.sp,
                                     color = Color(0xFF1976D2),
                                     fontWeight = FontWeight.Medium
@@ -90,7 +101,7 @@ fun SuggestionsSection(
                     }
                     
                     Text(
-                        text = if (suggestions.isEmpty() && !isProcessingWord && !isProcessingSentence) {
+                        text = if (suggestions.isEmpty() && !isLoading) {
                             "No suggestions yet - start typing!"
                         } else {
                             "${suggestions.size} improvements found"
@@ -296,8 +307,7 @@ fun SuggestionsSectionPreview() {
             onApplySuggestion = {},
             onIgnoreSuggestion = {},
             onApplyAll = {},
-            isProcessingWord = false,
-            isProcessingSentence = false
+            isLoading = false
         )
     }
 }
