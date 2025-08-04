@@ -12,7 +12,12 @@
       "Bash(rm:*)",
       "Bash(git submodule:*)",
       "Bash(git rm:*)",
-      "WebFetch(domain:ai.google.dev)"
+      "WebFetch(domain:ai.google.dev)",
+      "Bash(adb shell:*)",
+      "WebFetch(domain:blog.blundellapps.co.uk)",
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

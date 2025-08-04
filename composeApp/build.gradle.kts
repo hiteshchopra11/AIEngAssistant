@@ -31,8 +31,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            // MediaPipe LLM Inference
-            implementation("com.google.mediapipe:tasks-genai:0.10.14")
+            // MediaPipe LLM Inference - Updated to latest version
+            implementation("com.google.mediapipe:tasks-genai:0.10.23")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -67,8 +67,12 @@ android {
     }
     
     buildTypes {
+        getByName("debug") {
+            isDebuggable = true
+        }
         getByName("release") {
             isMinifyEnabled = false
+            isDebuggable = false
         }
     }
     compileOptions {

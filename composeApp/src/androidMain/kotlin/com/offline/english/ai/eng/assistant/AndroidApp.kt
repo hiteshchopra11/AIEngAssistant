@@ -9,7 +9,7 @@ import androidx.compose.runtime.setValue
 import com.offline.english.ai.eng.assistant.screens.WritingAssistantScreen
 
 @Composable
-fun AndroidApp() {
+fun AndroidApp(suggestionService: SuggestionService? = null) {
     MaterialTheme {
         var currentScreen by remember { mutableStateOf(AppScreen.HOME) }
 
@@ -19,7 +19,8 @@ fun AndroidApp() {
             )
 
             AppScreen.WRITING_ASSISTANT -> WritingAssistantScreen(
-                onBackPressed = { currentScreen = AppScreen.HOME }
+                onBackPressed = { currentScreen = AppScreen.HOME },
+                suggestionService = suggestionService
             )
         }
     }
