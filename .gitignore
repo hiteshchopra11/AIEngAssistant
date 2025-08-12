@@ -1,0 +1,70 @@
+# IDE and Build System
+*.iml
+.kotlin
+.gradle
+**/build/
+xcuserdata
+!src/**/build/
+local.properties
+.idea
+.DS_Store
+captures
+.externalNativeBuild
+.cxx
+
+# Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Firebase Configuration Files (contains sensitive API keys)
+**/google-services.json
+**/GoogleService-Info.plist
+firebase-debug.log
+.firebase/
+
+# Android keystore files
+*.keystore
+*.jks
+key.properties
+signing.properties
+
+# API Keys and Secrets
+secrets.properties
+api-keys.properties
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# Backup files
+*.bak
+*~
+
+# Configuration cache
+.gradle-config-cache/
+
+# Kotlin Multiplatform
+.konan/
+
+# JetBrains IDEs
+.fleet/
+
+# Project documentation files (ignore in VCS)
+SETUP.md
+TEXT_PROCESSING_FEATURES.md
+GEMINI.md
+CLAUDE.md
+FIREBASE.md
