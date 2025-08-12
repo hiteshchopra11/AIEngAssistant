@@ -1,7 +1,6 @@
 package com.ai.english.assistant.mvi
 
 import com.ai.english.assistant.domain.WritingMode
-import com.ai.english.assistant.domain.WritingSuggestion
 import com.ai.english.assistant.domain.GrammarSuggestionData
 
 /**
@@ -12,7 +11,6 @@ data class WritingAssistantState(
     val text: String = "",
     val wordCount: Int = 0,
     val selectedMode: WritingMode = WritingMode.EMAIL,
-    val suggestions: List<WritingSuggestion> = emptyList(),
     val grammarSuggestions: List<GrammarSuggestionData> = emptyList(),
     val appliedEdits: List<AppliedEdit> = emptyList(),
     val isAnalyzing: Boolean = false,

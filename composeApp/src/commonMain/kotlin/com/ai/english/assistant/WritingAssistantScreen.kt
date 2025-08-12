@@ -73,8 +73,7 @@ fun WritingAssistantScreen(
                 .padding(bottom = 12.dp)
         ) {
                 // Editor with suggestions from state
-                val editorSuggestions = remember(state.suggestions, state.grammarSuggestions) {
-                    val base = state.suggestions
+                val editorSuggestions = remember(state.grammarSuggestions) {
                     val mappedGrammar = state.grammarSuggestions.mapNotNull { gs ->
                         val idx = state.text.indexOf(gs.original)
                         if (idx >= 0) {
@@ -89,7 +88,7 @@ fun WritingAssistantScreen(
                             )
                         } else null
                     }
-                    base + mappedGrammar
+                    mappedGrammar
                 }
 
                 TextEditor(

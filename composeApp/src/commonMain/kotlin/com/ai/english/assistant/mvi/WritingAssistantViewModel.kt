@@ -62,7 +62,7 @@ class WritingAssistantViewModel(
         scope.launch {
             try {
                 suggestionService?.clearSuggestions()
-                suggestionService?.onSentenceCompleted(state.text)
+                suggestionService?.analyzeText(state.text)
             } catch (e: Exception) {
                 state = state.copy(
                     isAnalyzing = false,

@@ -1,7 +1,6 @@
 package com.ai.english.assistant.mvi
 
 import com.ai.english.assistant.domain.GrammarSuggestionData
-import com.ai.english.assistant.domain.WritingSuggestion
 
 // Simple random ID generator for multiplatform compatibility
 private fun generateRandomId(): String {
@@ -21,9 +20,7 @@ object WritingAssistantReducer {
                 val wordCount = if (intent.text.isBlank()) 0 else intent.text.trim().split("\\s+".toRegex()).size
                 currentState.copy(
                     text = intent.text,
-                    wordCount = wordCount,
-                    // Clear suggestions if text is empty
-                    suggestions = if (intent.text.isBlank()) emptyList() else currentState.suggestions
+                    wordCount = wordCount
                 )
             }
             
@@ -31,18 +28,8 @@ object WritingAssistantReducer {
                 currentState.copy(selectedMode = intent.mode)
             }
             
-            is WritingAssistantIntent.ApplySuggestion -> {
-                applySuggestion(currentState, intent.suggestion)
-            }
-            
             is WritingAssistantIntent.ApplyGrammarSuggestion -> {
                 applyGrammarSuggestion(currentState, intent.suggestion)
-            }
-            
-            is WritingAssistantIntent.IgnoreSuggestion -> {
-                currentState.copy(
-                    suggestions = currentState.suggestions.filter { it != intent.suggestion }
-                )
             }
             
             is WritingAssistantIntent.RejectGrammarSuggestion -> {
@@ -63,42 +50,6 @@ object WritingAssistantReducer {
                 currentState.copy(error = null)
             }
         }
-    }
-    
-    private fun applySuggestion(state: WritingAssistantState, suggestion: WritingSuggestion): WritingAssistantState {
-        val currentText = state.text
-        
-        // Find the position of the suggestion in the current text
-        val (startIndex, endIndex) = findSuggestionPosition(currentText, suggestion)
-            ?: return state // Return unchanged if suggestion not found
-        
-        // Apply the suggestion
-        val newText = currentText.replaceRange(startIndex, endIndex, suggestion.suggestion)
-        val newWordCount = if (newText.isBlank()) 0 else newText.trim().split("\\s+".toRegex()).size
-        
-        // Create applied edit record
-        val appliedEdit = WritingAssistantState.AppliedEdit(
-            id = generateRandomId(),
-            originalText = suggestion.original,
-            appliedText = suggestion.suggestion,
-            startIndex = startIndex,
-            endIndex = startIndex + suggestion.suggestion.length
-        )
-        
-        // Update remaining suggestions to account for text changes
-        val updatedSuggestions = updateSuggestionsAfterTextChange(
-            state.suggestions.filter { it != suggestion },
-            startIndex,
-            suggestion.original.length,
-            suggestion.suggestion.length
-        )
-        
-        return state.copy(
-            text = newText,
-            wordCount = newWordCount,
-            suggestions = updatedSuggestions,
-            appliedEdits = state.appliedEdits + appliedEdit
-        )
     }
     
     private fun applyGrammarSuggestion(state: WritingAssistantState, suggestion: GrammarSuggestionData): WritingAssistantState {
@@ -169,51 +120,6 @@ object WritingAssistantReducer {
             wordCount = newWordCount,
             appliedEdits = state.appliedEdits.filter { it.id != editId }
         )
-    }
-    
-    private fun findSuggestionPosition(text: String, suggestion: WritingSuggestion): Pair<Int, Int>? {
-        // Try exact position first
-        if (suggestion.startIndex >= 0 && 
-            suggestion.endIndex <= text.length &&
-            text.substring(suggestion.startIndex, suggestion.endIndex) == suggestion.original) {
-            return suggestion.startIndex to suggestion.endIndex
-        }
-        
-        // Fall back to text search
-        val foundIndex = text.indexOf(suggestion.original)
-        return if (foundIndex >= 0) {
-            foundIndex to (foundIndex + suggestion.original.length)
-        } else null
-    }
-    
-    /**
-     * Updates suggestion indices after a text change to maintain accuracy when applying multiple suggestions
-     */
-    private fun updateSuggestionsAfterTextChange(
-        suggestions: List<WritingSuggestion>,
-        changeStartIndex: Int,
-        originalLength: Int,
-        newLength: Int
-    ): List<WritingSuggestion> {
-        val offset = newLength - originalLength
-        
-        return suggestions.map { suggestion ->
-            when {
-                // Suggestion is completely before the change - no adjustment needed
-                suggestion.endIndex <= changeStartIndex -> suggestion
-                
-                // Suggestion starts after the change - adjust both indices
-                suggestion.startIndex >= changeStartIndex + originalLength -> {
-                    suggestion.copy(
-                        startIndex = suggestion.startIndex + offset,
-                        endIndex = suggestion.endIndex + offset
-                    )
-                }
-                
-                // Suggestion overlaps with the change - invalidate by setting negative indices
-                else -> suggestion.copy(startIndex = -1, endIndex = -1)
-            }
-        }
     }
 
     /**
