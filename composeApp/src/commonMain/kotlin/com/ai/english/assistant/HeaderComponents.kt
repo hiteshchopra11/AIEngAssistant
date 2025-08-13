@@ -1,15 +1,16 @@
 package com.ai.english.assistant
 
-import com.ai.english.assistant.domain.WritingMode
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,8 +23,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AIWriterHeader(
     wordCount: Int,
-    selectedMode: WritingMode,
-    onModeSelected: (WritingMode) -> Unit,
     onBackPressed: (() -> Unit)? = null
 ) {
     TopAppBar(
@@ -31,28 +30,11 @@ fun AIWriterHeader(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(
-                            Color(0xFF2E7D32),
-                            CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "AI",
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                ModeDropdown(
-                    selectedMode = selectedMode,
-                    onModeSelected = onModeSelected
+                Text(
+                    text = "AI English Assistant",
+                    color = Color(0xFF0F172A),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         },
@@ -85,56 +67,6 @@ fun AIWriterHeader(
     )
 }
 
-@Composable
-private fun ModeDropdown(
-    selectedMode: WritingMode,
-    onModeSelected: (WritingMode) -> Unit
-) {
-    val expandedState = remember { mutableStateOf(false) }
-
-    Surface(
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
-        color = Color(0xFFF5F7FA),
-        tonalElevation = 0.dp
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable { expandedState.value = true }
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-        ) {
-            Text(
-                text = selectedMode.name.lowercase().replaceFirstChar { it.uppercase() },
-                fontSize = 14.sp,
-                color = Color(0xFF0F172A),
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text("▾", color = Color(0xFF64748B), fontSize = 12.sp)
-        }
-    }
-
-    DropdownMenu(
-        expanded = expandedState.value,
-        onDismissRequest = { expandedState.value = false }
-    ) {
-        WritingMode.entries.forEach { mode ->
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = mode.name.lowercase().replaceFirstChar { it.uppercase() },
-                        fontSize = 14.sp
-                    )
-                },
-                onClick = {
-                    expandedState.value = false
-                    onModeSelected(mode)
-                }
-            )
-        }
-    }
-}
-
 private fun formatWordCount(count: Int): String {
     return when {
         count == 0 -> "No words"
@@ -158,22 +90,16 @@ fun AIWriterHeaderPreview() {
         Column {
             AIWriterHeader(
                 wordCount = 0,
-                selectedMode = WritingMode.EMAIL,
-                onModeSelected = {},
                 onBackPressed = null
             )
             HorizontalDivider()
             AIWriterHeader(
                 wordCount = 42,
-                selectedMode = WritingMode.ESSAY,
-                onModeSelected = {},
                 onBackPressed = {}
             )
             HorizontalDivider()
             AIWriterHeader(
                 wordCount = 1250,
-                selectedMode = WritingMode.BUSINESS,
-                onModeSelected = {},
                 onBackPressed = {}
             )
         }
