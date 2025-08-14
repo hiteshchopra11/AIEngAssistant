@@ -142,6 +142,9 @@ fun WritingAssistantScreen(
                         appliedEdit?.let { edit ->
                             viewModel.handleIntent(WritingAssistantIntent.RevertEdit(edit.id))
                         }
+                    },
+                    onApplyAll = {
+                        viewModel.handleIntent(WritingAssistantIntent.ApplyAllSuggestions)
                     }
                 )
 
@@ -155,7 +158,8 @@ private fun InlineSuggestionsList(
     grammarSuggestions: List<GrammarSuggestionData>,
     onApply: (GrammarSuggestionData) -> Unit,
     onSkip: (GrammarSuggestionData) -> Unit,
-    onRevert: (GrammarSuggestionData) -> Unit
+    onRevert: (GrammarSuggestionData) -> Unit,
+    onApplyAll: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -183,13 +187,40 @@ private fun InlineSuggestionsList(
                 Text(text = "Analyzing...", fontSize = 14.sp, color = Color(0xFF2563EB))
             }
         } else if (grammarSuggestions.isEmpty()) {
-            Text(
-                text = "No suggestions yet",
-                fontSize = 14.sp,
-                color = Color(0xFF6B7280),
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            ) {
+                Text(
+                    text = "No suggestions yet",
+                    fontSize = 14.sp,
+                    color = Color(0xFF6B7280)
+                )
+            }
         } else {
+            // Header row with Apply all
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Text(
+                    text = "${grammarSuggestions.size} suggestion${if (grammarSuggestions.size == 1) "" else "s"}",
+                    fontSize = 14.sp,
+                    color = Color(0xFF6B7280)
+                )
+                TextButton(
+                    onClick = onApplyAll,
+                    modifier = Modifier.background(Color(0xFF10B981), RoundedCornerShape(8.dp))
+                ) {
+                    Text(text = "Apply all", color = Color.White, fontSize = 14.sp)
+                }
+            }
             grammarSuggestions.forEachIndexed { index, suggestion ->
                 SuggestionRow(
                     suggestion = suggestion,

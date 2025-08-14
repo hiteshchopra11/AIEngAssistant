@@ -1,8 +1,7 @@
 package com.ai.english.assistant.mvi
 
-import com.ai.english.assistant.domain.WritingMode
-import com.ai.english.assistant.domain.WritingSuggestion
 import com.ai.english.assistant.domain.GrammarSuggestionData
+import com.ai.english.assistant.domain.WritingMode
 
 /**
  * Represents user intents in the Writing Assistant feature.
@@ -15,5 +14,6 @@ sealed interface WritingAssistantIntent {
     data class RejectGrammarSuggestion(val suggestion: GrammarSuggestionData) : WritingAssistantIntent
     data class RevertEdit(val editId: String) : WritingAssistantIntent
     object AnalyzeText : WritingAssistantIntent
+    object ApplyAllSuggestions : WritingAssistantIntent
     object ClearError : WritingAssistantIntent
 }

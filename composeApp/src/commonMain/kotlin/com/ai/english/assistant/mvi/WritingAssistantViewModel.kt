@@ -49,6 +49,12 @@ class WritingAssistantViewModel(
             is WritingAssistantIntent.ApplyGrammarSuggestion -> {
                 suggestionService?.acceptSuggestion(intent.suggestion)
             }
+            is WritingAssistantIntent.ApplyAllSuggestions -> {
+                // Best-effort accept all current suggestions in the service too
+                state.grammarSuggestions.forEach { suggestion ->
+                    suggestionService?.acceptSuggestion(suggestion)
+                }
+            }
             is WritingAssistantIntent.RejectGrammarSuggestion -> {
                 suggestionService?.rejectSuggestion(intent.suggestion)
             }

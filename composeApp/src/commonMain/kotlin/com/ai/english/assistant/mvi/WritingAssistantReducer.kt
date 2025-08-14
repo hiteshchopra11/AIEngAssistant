@@ -32,6 +32,15 @@ object WritingAssistantReducer {
                 applyGrammarSuggestion(currentState, intent.suggestion)
             }
             
+            is WritingAssistantIntent.ApplyAllSuggestions -> {
+                var nextState = currentState
+                // Apply each suggestion in sequence; non-applicable ones are skipped by applyGrammarSuggestion
+                for (suggestion in currentState.grammarSuggestions) {
+                    nextState = applyGrammarSuggestion(nextState, suggestion)
+                }
+                nextState
+            }
+            
             is WritingAssistantIntent.RejectGrammarSuggestion -> {
                 currentState.copy(
                     grammarSuggestions = currentState.grammarSuggestions.filter { it != intent.suggestion }
