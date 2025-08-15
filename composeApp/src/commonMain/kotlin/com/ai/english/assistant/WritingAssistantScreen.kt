@@ -22,6 +22,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -96,6 +98,41 @@ fun WritingAssistantScreen(
                         .fillMaxWidth()
                         .heightIn(min = 56.dp, max = 1000.dp)
                 )
+
+                // Advanced mode toggle
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Switch(
+                        checked = state.isAdvancedMode,
+                        onCheckedChange = { isAdvanced ->
+                            viewModel.handleIntent(WritingAssistantIntent.ToggleAdvancedMode(isAdvanced))
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Color(0xFF2563EB),
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Color(0xFFE5E7EB)
+                        )
+                    )
+                    Column {
+                        Text(
+                            text = "Advanced Mode",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF0F172A)
+                        )
+                        Text(
+                            text = if (state.isAdvancedMode) "Multiple iterations, higher accuracy" else "Fast single-pass analysis",
+                            fontSize = 12.sp,
+                            color = Color(0xFF6B7280)
+                        )
+                    }
+                }
 
                 // Analyze button and inline suggestions below editor
                 Row(
@@ -172,7 +209,8 @@ private fun InlineSuggestionsList(
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF0F172A)
         )
-        if (isLoading) {
+        // Show loading indicator if analyzing and no suggestions yet
+        if (isLoading && grammarSuggestions.isEmpty()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 16.dp)
@@ -186,21 +224,10 @@ private fun InlineSuggestionsList(
                 )
                 Text(text = "Analyzing...", fontSize = 14.sp, color = Color(0xFF2563EB))
             }
-        } else if (grammarSuggestions.isEmpty()) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
-            ) {
-                Text(
-                    text = "No suggestions yet",
-                    fontSize = 14.sp,
-                    color = Color(0xFF6B7280)
-                )
-            }
-        } else {
+        }
+        
+        // Show suggestions if we have any (even while loading)
+        if (grammarSuggestions.isNotEmpty()) {
             // Header row with Apply all
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -234,6 +261,44 @@ private fun InlineSuggestionsList(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                 }
+            }
+            
+            // Show loading indicator at the bottom if still analyzing and we have suggestions
+            if (isLoading) {
+                HorizontalDivider(
+                    color = Color(0xFFE5E7EB),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .padding(end = 8.dp),
+                        strokeWidth = 2.dp,
+                        color = Color(0xFF2563EB)
+                    )
+                    Text(text = "Finding more suggestions...", fontSize = 12.sp, color = Color(0xFF2563EB))
+                }
+            }
+        }
+        
+        // Show "No suggestions" only when not loading and no suggestions found
+        if (!isLoading && grammarSuggestions.isEmpty()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            ) {
+                Text(
+                    text = "No suggestions found",
+                    fontSize = 14.sp,
+                    color = Color(0xFF6B7280)
+                )
             }
         }
     }

@@ -16,4 +16,5 @@ sealed interface WritingAssistantIntent {
     object AnalyzeText : WritingAssistantIntent
     object ApplyAllSuggestions : WritingAssistantIntent
     object ClearError : WritingAssistantIntent
+    data class ToggleAdvancedMode(val isAdvancedMode: Boolean) : WritingAssistantIntent
 }

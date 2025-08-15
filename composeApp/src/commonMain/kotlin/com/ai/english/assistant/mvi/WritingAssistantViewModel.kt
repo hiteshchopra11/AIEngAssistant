@@ -24,13 +24,18 @@ class WritingAssistantViewModel(
         private set
     
     init {
-        // Observe suggestion service state changes
-        suggestionService?.grammarSuggestions?.onEach { suggestions ->
-            state = state.copy(grammarSuggestions = suggestions)
-        }?.launchIn(scope)
-        
+        // Only observe loading state from the service StateFlow
         suggestionService?.isLoading?.onEach { isLoading ->
             state = state.copy(isAnalyzing = isLoading)
+        }?.launchIn(scope)
+        
+        // Observe streaming suggestions for real-time updates - this is our primary source of suggestions
+        suggestionService?.streamingSuggestions?.onEach { newSuggestion ->
+            // Add the new suggestion to the current list immediately
+            val currentSuggestions = state.grammarSuggestions.toMutableList()
+            currentSuggestions.add(newSuggestion)
+            state = state.copy(grammarSuggestions = currentSuggestions)
+            println("🎯 ViewModel added suggestion: ${newSuggestion.original} → ${newSuggestion.suggestion} (total: ${currentSuggestions.size})")
         }?.launchIn(scope)
     }
     
@@ -67,8 +72,11 @@ class WritingAssistantViewModel(
         
         scope.launch {
             try {
+                // Clear existing suggestions in ViewModel state immediately
+                state = state.copy(grammarSuggestions = emptyList())
+                
                 suggestionService?.clearSuggestions()
-                suggestionService?.analyzeText(state.text)
+                suggestionService?.analyzeText(state.text, state.isAdvancedMode)
             } catch (e: Exception) {
                 state = state.copy(
                     isAnalyzing = false,

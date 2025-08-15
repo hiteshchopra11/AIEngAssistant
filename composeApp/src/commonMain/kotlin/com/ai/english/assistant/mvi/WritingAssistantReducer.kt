@@ -34,8 +34,8 @@ object WritingAssistantReducer {
             
             is WritingAssistantIntent.ApplyAllSuggestions -> {
                 var nextState = currentState
-                // Apply each suggestion in sequence; non-applicable ones are skipped by applyGrammarSuggestion
-                for (suggestion in currentState.grammarSuggestions) {
+                // Apply each suggestion in reverse order to avoid index shifting issues
+                for (suggestion in currentState.grammarSuggestions.reversed()) {
                     nextState = applyGrammarSuggestion(nextState, suggestion)
                 }
                 nextState
@@ -57,6 +57,10 @@ object WritingAssistantReducer {
             
             is WritingAssistantIntent.ClearError -> {
                 currentState.copy(error = null)
+            }
+            
+            is WritingAssistantIntent.ToggleAdvancedMode -> {
+                currentState.copy(isAdvancedMode = intent.isAdvancedMode)
             }
         }
     }

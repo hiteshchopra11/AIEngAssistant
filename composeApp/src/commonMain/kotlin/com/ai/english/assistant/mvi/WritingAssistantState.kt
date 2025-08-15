@@ -1,7 +1,7 @@
 package com.ai.english.assistant.mvi
 
-import com.ai.english.assistant.domain.WritingMode
 import com.ai.english.assistant.domain.GrammarSuggestionData
+import com.ai.english.assistant.domain.WritingMode
 
 /**
  * Represents the complete state of the Writing Assistant feature.
@@ -14,7 +14,8 @@ data class WritingAssistantState(
     val grammarSuggestions: List<GrammarSuggestionData> = emptyList(),
     val appliedEdits: List<AppliedEdit> = emptyList(),
     val isAnalyzing: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isAdvancedMode: Boolean = false
 ) {
     /**
      * Represents an edit that has been applied to the text.
