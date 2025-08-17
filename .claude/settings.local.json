@@ -8,7 +8,9 @@
       "Bash(git rm:*)",
       "WebSearch",
       "Bash(find:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

@@ -32,6 +32,15 @@ An intelligent writing companion that helps improve English grammar, spelling, w
 - **Accuracy**: Higher precision with up to 200 suggestions
 - **Best for**: Important documents requiring thorough review
 
+### 📹 See It In Action
+
+| Mode | Demo Video | Features Shown |
+|------|------------|----------------|
+| **Standard Mode** | [📹 Normal Mode Demo](docs/videos/normal-mode-demo.mp4) | Real-time streaming suggestions, fast analysis, basic grammar and style corrections |
+| **Advanced Mode** | [📹 Advanced Mode Demo](docs/videos/advanced-mode-demo.mp4) | Multi-pass analysis, comprehensive suggestions, higher accuracy with detailed explanations |
+
+> **Note**: These videos demonstrate the app running on Android with Firebase AI integration. The analysis speed and suggestion quality differences between modes are clearly visible.
+
 ### Interactive Suggestion System
 - **Apply**: Accept a suggestion and update your text
 - **Skip**: Ignore the suggestion for now
