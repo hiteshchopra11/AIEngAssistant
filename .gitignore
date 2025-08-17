@@ -66,5 +66,10 @@ npm-debug.log*
 SETUP.md
 TEXT_PROCESSING_FEATURES.md
 GEMINI.md
-CLAUDE.md
 FIREBASE.md
+
+# AI/LLM Configuration Files
+*.gemini
+*.ai-config
+ai-prompts/
+llm-config/

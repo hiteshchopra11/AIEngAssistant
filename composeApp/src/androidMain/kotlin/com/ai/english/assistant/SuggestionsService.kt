@@ -414,7 +414,8 @@ class SuggestionsService : SuggestionContract {
             if (original.isNotBlank() && suggestion.isNotBlank()) {
                 val type = when (category.lowercase()) {
                     "spelling" -> SuggestionType.SPELLING
-                    "word_choice", "vocabulary", "clarity" -> SuggestionType.GRAMMAR_WORD
+                    "word_choice", "vocabulary" -> SuggestionType.STYLE
+                    "clarity" -> SuggestionType.CLARITY
                     "punctuation", "capitalization", "verb_tense", "article_usage", "grammar" -> SuggestionType.GRAMMAR_SENTENCE
                     else -> SuggestionType.GRAMMAR_SENTENCE
                 }
@@ -467,8 +468,9 @@ class SuggestionsService : SuggestionContract {
                 if (original.isNotBlank() && suggestion.isNotBlank()) {
                     val type = when (category.lowercase()) {
                         "spelling" -> SuggestionType.SPELLING
-                        "word_choice", "vocabulary", "clarity" -> SuggestionType.GRAMMAR_WORD
-                        "coherence", "flow", "punctuation" -> SuggestionType.GRAMMAR_SENTENCE
+                        "word_choice", "vocabulary" -> SuggestionType.STYLE
+                        "clarity" -> SuggestionType.CLARITY
+                        "coherence", "flow", "punctuation", "grammar" -> SuggestionType.GRAMMAR_SENTENCE
                         else -> SuggestionType.GRAMMAR_SENTENCE
                     }
 

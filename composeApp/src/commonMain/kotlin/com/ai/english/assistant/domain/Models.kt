@@ -21,7 +21,9 @@ enum class WritingSuggestionType {
 enum class SuggestionType {
     GRAMMAR_WORD,
     GRAMMAR_SENTENCE,
-    SPELLING
+    SPELLING,
+    STYLE,
+    CLARITY
 }
 
 data class WritingSuggestion(

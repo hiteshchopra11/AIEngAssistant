@@ -1,149 +1,321 @@
-### AI English Assistant
+# AI English Assistant
 
-An AI-powered writing helper that improves English grammar, spelling, word choice, and clarity. Built with Kotlin Multiplatform and Compose Multiplatform, it provides a shared UI across Android, iOS, and Desktop. AI suggestions are powered by Firebase AI (Gemini) on Android.
+An intelligent writing companion that helps improve English grammar, spelling, word choice, and clarity using AI-powered suggestions. Built with Kotlin Multiplatform and Compose Multiplatform for a native experience across Android, iOS, and Desktop platforms.
 
+## 🚀 Features & How It Works
 
-### What it does
-- **Grammar and spelling**: Finds issues and proposes concise fixes
-- **Word choice and clarity**: Suggests more natural phrasing
-- **Inline highlighting**: Highlights problematic text directly in the editor
-- **Actionable suggestions**: Apply, skip, or revert each change; apply-all for batches
-- **Writing modes**: Switch tone/context (Email, Essay, Business, Casual)
-- **Word count**: Live counter as you type
+### Real-Time Writing Analysis
+**What it does**: As you type, the app analyzes your text and provides intelligent suggestions for improvement.
 
+**Example in action**:
+- **Input**: "I have been working on this project since last month and I think it will be ready soon."
+- **Grammar suggestion**: `since last month` → `for the past month` (Preposition usage)
+- **Word choice**: `I think` → `I believe` (More confident tone)
+- **Clarity**: Break long sentence into two for better readability
 
-### Architecture
+### Analysis Modes
 
-This app follows **MVI (Model-View-Intent)** architecture pattern for predictable state management and unidirectional data flow.
+#### 🚀 Standard Mode (Fast)
+- **Model**: Gemini 2.0 Flash Lite
+- **Method**: Single-pass streaming analysis
+- **Speed**: Real-time results as AI generates suggestions
+- **Focus**: Core grammar, spelling, and basic style issues
+- **Best for**: Quick proofreading and immediate feedback
 
-#### MVI Architecture Overview
+#### 🎯 Advanced Mode (Precision)
+- **Model**: Gemini 2.0 Flash Experimental  
+- **Method**: Multi-iteration analysis with 3 specialized passes
+- **Process**:
+  1. **Comprehensive Analysis** - Grammar, word choice, punctuation, style, and coherence
+  2. **Refinement Pass** - Catches subtle errors missed in first iteration
+  3. **Quality Validation** - Filters and validates suggestions for accuracy
+- **Accuracy**: Higher precision with up to 200 suggestions
+- **Best for**: Important documents requiring thorough review
 
-- **Model (State)**: Single source of truth for UI state (`WritingAssistantState`)
-- **View**: Composable UI that observes state and emits intents (`WritingAssistantScreen`, `TextEditor`)
-- **Intent**: User actions/intents that trigger state changes (`WritingAssistantIntent`)
+### Interactive Suggestion System
+- **Apply**: Accept a suggestion and update your text
+- **Skip**: Ignore the suggestion for now
+- **Revert**: Undo a previously applied change
+- **Apply All**: Accept all current suggestions at once
 
-#### Core MVI Components
+### Real-Time Text Highlighting
+Text is highlighted directly in the editor with color-coded categories:
+- 🔴 **Grammar issues**: Red highlighting
+- 🟣 **Style improvements**: Purple highlighting  
+- 🟢 **Clarity suggestions**: Green highlighting
 
-**1. State Management**
+### Smart Word Counting
+Live word counter that formats elegantly:
+- `0 words`, `1 word`, `247 words`, `2.1K words`, `1.3M words`
+
+## 🏗️ Architecture
+
+This application follows the **MVI (Model-View-Intent)** architectural pattern, ensuring predictable state management and unidirectional data flow.
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        UI Layer                              │
+│  ┌─────────────────┐    ┌─────────────────┐                 │
+│  │ WritingAssistant│    │   TextEditor    │                 │
+│  │     Screen      │    │    Component    │                 │
+│  └─────────────────┘    └─────────────────┘                 │
+│           │                       │                         │
+│           └───────────┬───────────┘                         │
+├───────────────────────┼─────────────────────────────────────┤
+│                   MVI Layer                                 │
+│           ┌───────────▼───────────┐                         │
+│           │  WritingAssistant     │                         │
+│           │     ViewModel         │                         │
+│           └───────────┬───────────┘                         │
+│                       │                                     │
+│  ┌────────────────────▼────────────────────┐                │
+│  │            Intent Processor             │                │
+│  │  ┌─────────────┐    ┌─────────────────┐ │                │
+│  │  │   Intent    │    │    Reducer      │ │                │
+│  │  │  Handler    │    │  (Pure Func)    │ │                │
+│  │  └─────────────┘    └─────────────────┘ │                │
+│  └─────────────────────┬─────────────────────               │
+├────────────────────────┼─────────────────────────────────────┤
+│                 Domain Layer                                │
+│  ┌─────────────────────▼─────────────────────┐               │
+│  │           SuggestionContract              │               │
+│  │         (Platform Interface)              │               │
+│  └─────────────────────┬─────────────────────┘               │
+├────────────────────────┼─────────────────────────────────────┤
+│              Platform Layer                                 │
+│  ┌─────────────────────▼─────────────────────┐               │
+│  │  Android: Firebase AI (Gemini)           │               │
+│  │  iOS: Placeholder Implementation          │               │
+│  │  JVM: Placeholder Implementation          │               │
+│  └───────────────────────────────────────────┘               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### MVI Components Breakdown
+
+#### 1. **State (Model)**
+Single immutable state holding all UI data:
 ```kotlin
-// Single immutable state
 data class WritingAssistantState(
     val text: String = "",
     val wordCount: Int = 0,
-    val selectedMode: WritingMode = WritingMode.EMAIL,
-    val suggestions: List<WritingSuggestion> = emptyList(),
     val grammarSuggestions: List<GrammarSuggestionData> = emptyList(),
     val appliedEdits: List<AppliedEdit> = emptyList(),
     val isAnalyzing: Boolean = false,
+    val isAdvancedMode: Boolean = false,
     val error: String? = null
 )
 ```
 
-**2. User Intents**
+#### 2. **Intents (User Actions)**
+All user interactions as sealed interface:
 ```kotlin
-// All user actions as sealed interface
 sealed interface WritingAssistantIntent {
     data class UpdateText(val text: String) : WritingAssistantIntent
-    data class SelectWritingMode(val mode: WritingMode) : WritingAssistantIntent
-    data class ApplySuggestion(val suggestion: WritingSuggestion) : WritingAssistantIntent
+    data class ApplyGrammarSuggestion(val suggestion: GrammarSuggestionData) : WritingAssistantIntent
+    data class ToggleAdvancedMode(val enabled: Boolean) : WritingAssistantIntent
     object AnalyzeText : WritingAssistantIntent
+    object ApplyAllSuggestions : WritingAssistantIntent
     // ... more intents
 }
 ```
 
-**3. Pure Reducer Function**
+#### 3. **Reducer (Pure State Transformation)**
 ```kotlin
-// Pure function: (State, Intent) -> State
 object WritingAssistantReducer {
-    fun reduce(currentState: WritingAssistantState, intent: WritingAssistantIntent): WritingAssistantState
-}
-```
-
-**4. ViewModel (Intent Handler)**
-```kotlin
-// Handles intents and manages side effects
-class WritingAssistantViewModel {
-    var state by mutableStateOf(WritingAssistantState())
-    
-    fun handleIntent(intent: WritingAssistantIntent) {
-        val newState = WritingAssistantReducer.reduce(state, intent)
-        state = newState
-        // Handle side effects (API calls, etc.)
+    fun reduce(
+        currentState: WritingAssistantState, 
+        intent: WritingAssistantIntent
+    ): WritingAssistantState {
+        return when (intent) {
+            is WritingAssistantIntent.UpdateText -> 
+                currentState.copy(
+                    text = intent.text,
+                    wordCount = intent.text.split("\\s+".toRegex()).size
+                )
+            // ... handle other intents
+        }
     }
 }
 ```
 
-#### How it works (Data Flow)
-1. **User Interaction**: User types, clicks button → Intent emitted
-2. **Intent Processing**: ViewModel receives intent
-3. **State Reduction**: Pure reducer function creates new state
-4. **State Update**: ViewModel updates observable state
-5. **UI Recomposition**: View observes state and recomposes
-6. **Side Effects**: ViewModel handles async operations (API calls)
+#### 4. **ViewModel (Orchestrator)**
+Coordinates between UI, state, and services:
+```kotlin
+class WritingAssistantViewModel(
+    private val suggestionService: SuggestionContract
+) {
+    var state by mutableStateOf(WritingAssistantState())
+        private set
+    
+    fun handleIntent(intent: WritingAssistantIntent) {
+        state = WritingAssistantReducer.reduce(state, intent)
+        handleSideEffects(intent)
+    }
+}
+```
 
-#### Key Architecture Files
+### Data Flow
+1. **User Interaction** → Intent emitted from UI
+2. **Intent Processing** → ViewModel receives intent
+3. **State Reduction** → Pure function creates new state
+4. **State Update** → ViewModel updates observable state  
+5. **UI Recomposition** → Compose UI observes state changes
+6. **Side Effects** → Async operations (API calls) handled separately
 
-**MVI Layer**:
-- `mvi/WritingAssistantIntent.kt` - User intents
-- `mvi/WritingAssistantState.kt` - Application state
-- `mvi/WritingAssistantReducer.kt` - Pure state transformations
-- `mvi/WritingAssistantViewModel.kt` - Intent handler & side effects
+## 🛠️ Tech Stack
 
-**UI Layer**:
-- `WritingAssistantScreen.kt` - Main screen composable
-- `TextEditorScreen.kt` - Text editor with highlighting
+### Core Technologies
+- **[Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)** - Shared business logic across platforms
+- **[Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/)** - Shared UI framework
+- **[Firebase AI (Gemini)](https://firebase.google.com/docs/vertex-ai)** - AI-powered text analysis on Android
+- **[Gradle Version Catalogs](https://docs.gradle.org/current/userguide/platforms.html)** - Centralized dependency management
 
-**Domain Layer**:
-- `domain/Models.kt` - Domain models and data classes
-- `SuggestionContract.kt` - Service interface
-- `TextProcessor.kt` - Text analysis utilities
+### Architecture & Patterns
+- **MVI (Model-View-Intent)** - Unidirectional data flow
+- **Dependency Injection** - Platform-specific implementations
+- **Expect/Actual** - Kotlin Multiplatform abstractions
 
-**Platform Layer**:
-- `androidMain/.../SuggestionsService.kt` - Firebase AI implementation
+### Development Tools
+- **Kotlinx Coroutines** - Asynchronous programming
+- **Kotlinx DateTime** - Date/time operations
+- **Android Splash Screen API** - Proper splash screen implementation
+- **Material 3 Design** - Modern UI components
 
+## 📁 Project Structure
 
-### Platform support
-- **Android**: Full functionality including AI suggestions (Firebase AI Gemini)
-- **iOS and Desktop (JVM)**: UI runs and allows typing; AI suggestions are currently Android-only via `expect`/`actual` `SuggestionContract`
+```
+AIEnglishAssistant/
+├── composeApp/
+│   ├── src/
+│   │   ├── commonMain/kotlin/         # Shared code
+│   │   │   ├── domain/                # Business models
+│   │   │   ├── mvi/                   # MVI architecture
+│   │   │   ├── *.kt                   # UI components
+│   │   ├── androidMain/kotlin/        # Android-specific
+│   │   │   ├── MainActivity.kt        # Android entry point
+│   │   │   ├── SuggestionsService.kt  # Firebase AI implementation
+│   │   ├── iosMain/kotlin/            # iOS-specific
+│   │   ├── jvmMain/kotlin/            # Desktop-specific
+│   │   ├── debug/                     # Debug Firebase config
+│   │   └── release/                   # Release Firebase config
+├── iosApp/                            # iOS Xcode project
+├── gradle/libs.versions.toml          # Dependency catalog
+└── README.md
+```
 
+## 🚀 Getting Started
 
-### Run it
-- **Build all**: `./gradlew build`
-- **Android**: Run from Android Studio or `./gradlew :composeApp:assembleDebug`
-- **iOS**: Open `iosApp/iosApp.xcodeproj` in Xcode and run (UI only)
-- **Desktop (JVM)**: `./gradlew :composeApp:run` (UI only)
+### Prerequisites
+- **JDK 11+** for Kotlin compilation
+- **Android Studio** for Android development
+- **Xcode** for iOS development (macOS only)
 
+### Build Commands
+```bash
+# Build entire project
+./gradlew build
 
-### Android setup (Firebase AI)
-To enable AI suggestions on Android, you need to add your Firebase configuration files:
+# Clean build
+./gradlew clean build
 
-1. **Create Firebase Project**: Go to [Firebase Console](https://console.firebase.google.com/) and create a new project
-2. **Enable Firebase AI**: In your Firebase project, enable the Firebase AI service
-3. **Download Configuration**: Download the `google-services.json` file for your Android app
-4. **Add Configuration Files**:
-   - Copy `google-services.json` to `composeApp/src/debug/google-services.json`
-   - Copy `google-services.json` to `composeApp/src/release/google-services.json`
-   - Template files are provided in the same directories for reference
+# Run tests
+./gradlew check
+```
 
-**⚠️ Security Note**: Firebase configuration files contain API keys and should never be committed to version control. They are already added to `.gitignore`.
+### Platform-Specific Commands
 
-This project already includes Firebase AI dependencies via the Gradle Version Catalog. See `FIREBASE.md` for details. The Android service uses the Google AI backend model `gemini-2.5-flash` to produce up to three concise, categorized micro-suggestions for the recently completed sentence or clause.
+#### Android
+```bash
+# Debug build
+./gradlew :composeApp:assembleDebug
 
-Additional docs:
-- `FIREBASE.md`: Firebase configuration and dependencies
-- `TEXT_PROCESSING_FEATURES.md`: Word/sentence detection and AI prompts overview
-- `GEMINI.md`: Project overview for AI tooling
+# Release build  
+./gradlew :composeApp:assembleRelease
 
+# Install on device
+./gradlew :composeApp:installDebug
+```
 
-### Tech stack
-- **Kotlin Multiplatform** with **Compose Multiplatform** UI
-- **MVI Architecture** for predictable state management
-- **Firebase AI (Gemini)** on Android for AI suggestions
-- Gradle Version Catalog for dependency management
-- Kotlinx Coroutines for asynchronous operations
+#### iOS
+```bash
+# Open in Xcode
+open iosApp/iosApp.xcodeproj
+```
 
+#### Desktop (JVM)
+```bash
+# Run desktop application
+./gradlew :composeApp:run
+```
 
-### Roadmap ideas
-- iOS/Desktop parity for AI suggestions
-- More tones and domain presets
-- Per-language localization and EFL learning aids
+## 🔐 Firebase AI Setup (Android)
+
+To enable AI suggestions on Android:
+
+### 1. Create Firebase Project
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create new project or use existing
+3. Enable **Vertex AI in Firebase**
+
+### 2. Configure Android App
+1. Add Android app to Firebase project
+2. Use package name: `com.ai.english.assistant`
+3. Download `google-services.json`
+
+### 3. Add Configuration Files
+```bash
+# Place the downloaded file in both locations:
+cp google-services.json composeApp/src/debug/
+cp google-services.json composeApp/src/release/
+```
+
+### 4. AI Models Used
+The app utilizes different Gemini models based on the selected mode:
+
+- **Standard Mode**: `gemini-2.0-flash-lite` - Optimized for speed and real-time streaming
+- **Advanced Mode**: `gemini-2.0-flash-exp` - Experimental model with enhanced accuracy
+
+Both models are accessed through Firebase AI with specialized prompts for grammar, style, and clarity analysis.
+
+### 5. Security Notes
+⚠️ **Important**: Firebase configuration files contain API keys and are excluded from version control via `.gitignore`
+
+## 🎯 Platform Support
+
+| Platform | UI Support | AI Suggestions | Status |
+|----------|------------|----------------|--------|
+| **Android** | ✅ Full | ✅ Firebase AI | Production Ready |
+| **iOS** | ✅ Full | ⏳ Planned | UI Complete |
+| **Desktop** | ✅ Full | ⏳ Planned | UI Complete |
+
+## 🔮 Roadmap
+
+### Near Term
+- [ ] iOS AI integration (On-device Core ML)
+- [ ] Desktop AI integration (Local LLM)
+- [ ] Enhanced writing modes (Academic, Creative, Technical)
+- [ ] Dark mode support
+
+### Future Features
+- [ ] Multi-language support
+- [ ] Document export (PDF, Word)
+- [ ] Writing analytics and insights
+- [ ] Collaborative editing
+- [ ] Plugin system for custom suggestions
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+**Built with ❤️ using Kotlin Multiplatform & Compose Multiplatform**

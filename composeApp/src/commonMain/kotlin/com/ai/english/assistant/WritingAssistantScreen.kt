@@ -81,6 +81,8 @@ fun WritingAssistantScreen(
                                 endIndex = idx + gs.original.length,
                                 type = when (gs.type) {
                                     SuggestionType.SPELLING, SuggestionType.GRAMMAR_WORD, SuggestionType.GRAMMAR_SENTENCE -> WritingSuggestionType.GRAMMAR
+                                    SuggestionType.STYLE -> WritingSuggestionType.STYLE
+                                    SuggestionType.CLARITY -> WritingSuggestionType.CLARITY
                                 }
                             )
                         } else null
@@ -324,6 +326,8 @@ private fun SuggestionRow(
                         SuggestionType.SPELLING -> Color(0xFFFEE2E2)
                         SuggestionType.GRAMMAR_WORD -> Color(0xFFDEEFFE)
                         SuggestionType.GRAMMAR_SENTENCE -> Color(0xFFD1FAE5)
+                        SuggestionType.STYLE -> Color(0xFFF3E5F5)
+                        SuggestionType.CLARITY -> Color(0xFFE8F5E8)
                     },
                     RoundedCornerShape(12.dp)
                 )
@@ -336,6 +340,8 @@ private fun SuggestionRow(
                     SuggestionType.SPELLING -> "Spelling"
                     SuggestionType.GRAMMAR_WORD -> "Word Choice"
                     SuggestionType.GRAMMAR_SENTENCE -> "Grammar"
+                    SuggestionType.STYLE -> "Style"
+                    SuggestionType.CLARITY -> "Clarity"
                 },
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
@@ -343,6 +349,8 @@ private fun SuggestionRow(
                     SuggestionType.SPELLING -> Color(0xFFDC2626)
                     SuggestionType.GRAMMAR_WORD -> Color(0xFF2563EB)
                     SuggestionType.GRAMMAR_SENTENCE -> Color(0xFF059669)
+                    SuggestionType.STYLE -> Color(0xFF7B1FA2)
+                    SuggestionType.CLARITY -> Color(0xFF388E3C)
                 }
             )
         }
