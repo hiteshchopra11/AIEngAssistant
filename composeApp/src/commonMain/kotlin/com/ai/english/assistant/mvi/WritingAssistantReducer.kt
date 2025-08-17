@@ -33,12 +33,30 @@ object WritingAssistantReducer {
             }
             
             is WritingAssistantIntent.ApplyAllSuggestions -> {
-                var nextState = currentState
-                // Apply each suggestion in reverse order to avoid index shifting issues
-                for (suggestion in currentState.grammarSuggestions.reversed()) {
-                    nextState = applyGrammarSuggestion(nextState, suggestion)
+                var newText = currentState.text
+                val suggestions = currentState.grammarSuggestions.sortedByDescending { it.original.length }
+
+                for (suggestion in suggestions) {
+                    val regex = Regex.escape(suggestion.original)
+                    newText = newText.replaceFirst(regex.toRegex(), suggestion.suggestion)
                 }
-                nextState
+
+                val newWordCount = if (newText.isBlank()) 0 else newText.trim().split("\\s+".toRegex()).size
+
+                currentState.copy(
+                    text = newText,
+                    wordCount = newWordCount,
+                    grammarSuggestions = emptyList(),
+                    appliedEdits = currentState.appliedEdits + suggestions.map {
+                        WritingAssistantState.AppliedEdit(
+                            id = generateRandomId(),
+                            originalText = it.original,
+                            appliedText = it.suggestion,
+                            startIndex = -1, // We can't reliably know the index here
+                            endIndex = -1
+                        )
+                    }
+                )
             }
             
             is WritingAssistantIntent.RejectGrammarSuggestion -> {

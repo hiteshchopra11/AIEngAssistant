@@ -195,29 +195,26 @@ class SuggestionsService : SuggestionContract {
         if (suggestions.isEmpty()) return suggestions
 
         val validationPrompt = """
-            You are a quality control expert. Review these corrections for accuracy and necessity.
-            
+            You are a meticulous, world-class English proofreader acting as a quality control expert. Your task is to review proposed corrections and REJECT any that are not 100% grammatically perfect and necessary.
+
             Original text:
             "$fullText"
-            
+
             Proposed corrections to validate:
             ${suggestions.take(100).joinToString("\n") { "${it.original} → ${it.suggestion} (${it.category}: ${it.explanation})" }}
-            
-            For each correction, determine:
-            1. Is the original text actually wrong? (not just stylistic preference)
-            2. Is the correction grammatically accurate?
-            3. Does it preserve the intended meaning?
-            4. How important is this correction? (1-10 scale)
-            
-            Output only APPROVED corrections in format:
+
+            For each correction, you must strictly evaluate:
+            1.  Is the original text definitively incorrect according to standard English grammar rules? (Reject if it's a stylistic choice).
+            2.  Is the proposed correction absolutely, unequivocally correct? (e.g., "fixed" not "fixeded", "doesn't have" not "don't has").
+            3.  Does the correction preserve the original meaning?
+            4.  Is the correction significant? (Reject trivial changes).
+
+            Your output MUST ONLY contain corrections that pass ALL of these criteria.
+            Your output format MUST be:
             "original"|"correction"|category|reason|confidence_score
-            
-            Reject corrections that are:
-            - Stylistic preferences rather than errors
-            - Incorrect or questionable corrections
-            - Minor improvements that don't significantly help
-            
-            Only output validated, necessary corrections.
+
+            CRITICAL: If a proposed correction contains ANY grammatical error (e.g., "fixeded", "don't has"), you MUST reject it. Do not attempt to fix the correction. Simply discard it.
+            Only output the validated, necessary, and PERFECT corrections.
         """.trimIndent()
 
         return try {
@@ -261,7 +258,8 @@ class SuggestionsService : SuggestionContract {
         
         Focus on: missing/misused commas, apostrophe errors, capitalization, quotation marks, semicolons, colons.
         
-        Output format: "original_text"|"corrected_text"|Punctuation|explanation|confidence_0.0-1.0
+        Output format: "original_error"|"correction"|Punctuation|explanation|confidence_0.0-1.0
+        The "original_error" should be a short phrase, not a full sentence.
         If no errors, return: NONE
     """.trimIndent()
 
