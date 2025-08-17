@@ -57,6 +57,23 @@ Text is highlighted directly in the editor with color-coded categories:
 Live word counter that formats elegantly:
 - `0 words`, `1 word`, `247 words`, `2.1K words`, `1.3M words`
 
+## 📸 Interface Screenshots
+
+### Main Writing Interface
+<img src="docs/images/main-interface-suggestions.jpeg" alt="Main writing interface showing text editor with highlighted suggestions and suggestion panel" width="400"/>
+
+*The main interface showing text with highlighted grammar, spelling, and style issues. The suggestions panel displays 33 suggestions with "Apply all" functionality.*
+
+### Grammar Suggestions with Detailed Explanations
+<img src="docs/images/grammar-suggestions-detailed.jpeg" alt="Grammar suggestions showing detailed explanations for corrections" width="400"/>
+
+*Grammar suggestions with comprehensive explanations, including subject-verb agreement, contractions, and punctuation corrections.*
+
+### Clarity & Style Improvements
+<img src="docs/images/clarity-suggestions-detailed.jpeg" alt="Clarity suggestions showing sentence structure and readability improvements" width="400"/>
+
+*Clarity suggestions that improve sentence structure, eliminate redundancy, and enhance overall readability.*
+
 ## 🏗️ Architecture
 
 This application follows the **MVI (Model-View-Intent)** architectural pattern, ensuring predictable state management and unidirectional data flow.
