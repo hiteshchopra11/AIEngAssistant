@@ -10,10 +10,7 @@
       "Bash(find:*)",
       "Bash(true)",
       "Bash(mkdir:*)",
-      "Bash(mv:*)",
-      "Bash(git remote add:*)",
-      "Bash(git branch:*)",
-      "Bash(git push:*)"
+      "Bash(mv:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

@@ -34,19 +34,10 @@ An intelligent writing companion that helps improve English grammar, spelling, w
 
 ### 📹 See It In Action
 
-#### **Standard Mode** - Real-time streaming suggestions
-<video src="docs/videos/normal-mode-demo.mp4" width="600" controls>
-  Your browser does not support the video tag. <a href="docs/videos/normal-mode-demo.mp4">Download the demo video</a>
-</video>
-
-*Features shown: Real-time streaming suggestions, fast analysis, basic grammar and style corrections*
-
-#### **Advanced Mode** - Multi-pass comprehensive analysis  
-<video src="docs/videos/advanced-mode-demo.mp4" width="600" controls>
-  Your browser does not support the video tag. <a href="docs/videos/advanced-mode-demo.mp4">Download the demo video</a>
-</video>
-
-*Features shown: Multi-pass analysis, comprehensive suggestions, higher accuracy with detailed explanations*
+| Mode | Demo Video | Features Shown |
+|------|------------|----------------|
+| **Standard Mode** | [📹 Normal Mode Demo](docs/videos/normal-mode-demo.mp4) | Real-time streaming suggestions, fast analysis, basic grammar and style corrections |
+| **Advanced Mode** | [📹 Advanced Mode Demo](docs/videos/advanced-mode-demo.mp4) | Multi-pass analysis, comprehensive suggestions, higher accuracy with detailed explanations |
 
 > **Note**: These videos demonstrate the app running on Android with Firebase AI integration. The analysis speed and suggestion quality differences between modes are clearly visible.
 
